@@ -1,10 +1,12 @@
 (define (problem planning)
     (:domain grid_domain)
     (:objects 
-        ;Corresponding to how many squares are filled in each column
+        ;Corresponding col 0 to 4 in a 5x5 grid
+        ; will be used to tell how many squares are filled in each column
         col0 col1 col2 col3 col4  - col
 
-        ;Corresponding to how many squares are filled in each row
+        ;Corresponding row 0 to 4 in a 5x5 grid
+        ;will be used to tell how many squares are filled in each row
         row0 row1 row2 row3 row4  - row
 
         ;Corresponding to how many squares are filled in a row
@@ -20,17 +22,19 @@
     (:init
         ; all columns and rows are empty to start
         (is col0 fill0)
+        (is col1 fill0)
         (is col2 fill0)
         (is col3 fill0)
         (is col4 fill0)
-        (is col1 fill0)
+        
+
         (is row0 fill0)
         (is row1 fill0)
         (is row2 fill0)
         (is row3 fill0)
         (is row4 fill0)
 
-        (is0 fill0)
+        (is0 fill0) ; used to know if a row /col is empty
  
         ; so that the planner knows how to increment the fill
         (nextF fill0 fill1)
@@ -39,6 +43,7 @@
         (nextF fill3 fill4)
         (nextF fill4 fill5)
 
+        ; so that the planner knows what column/row are adjacent to each other
         (nextC col0 col1)
         (nextC col1 col2)
         (nextC col2 col3)
@@ -50,7 +55,7 @@
         (nextR row3 row4)
 
         ; so that the planner know that square 00 
-        ;corresponds to col0 and row0
+        ;corresponds to col0 and row0 and ect
         (in sq00 col0 row0)
         (in sq01 col1 row0)
         (in sq02 col2 row0)
@@ -85,14 +90,14 @@
         ; We know we are complete when all rows and columns are filled
         ; coresponding to the keys
         ; the last number is how many square should be filled to complete
-        ; the puzzel in that row or column` 
-        (is col0 fill0)
+        ; the puzzel in that row or column
+        (is col0 fill1)
         (is col1 fill3)
         (is col2 fill3)
         (is col3 fill3)
         (is col4 fill0)
 
-        (is row0 fill0)
+        (is row0 fill1)
         (is row1 fill3)
         (is row2 fill3)
         (is row3 fill3)
