@@ -8,7 +8,7 @@
         row0 row1 row2 row3 row4  - row
 
         ;Corresponding to how many squares are filled in a row
-        fill0 fill1 fill2 fill3 fill4 fill5
+        fill0 fill1 fill2 fill3 fill4 fill5 - fill
 
         ;Corresponding to each square (true if filled)
         sq00 sq01 sq02 sq03 sq04   
@@ -19,42 +19,35 @@
     )
     (:init
         ; all columns and rows are empty to start
-        (= (fill col0) 0)
-        (= (fill col1) 0)
-        (=(fill col2) 0)
-        (= (fill col3) 0)
-        (= (fill col4) 0)
+        (is col0 fill0)
+        (is col2 fill0)
+        (is col3 fill0)
+        (is col4 fill0)
+        (is col1 fill0)
+        (is row0 fill0)
+        (is row1 fill0)
+        (is row2 fill0)
+        (is row3 fill0)
+        (is row4 fill0)
 
-        (= (fill row0) 0)
-        (= (fill row1) 0)
-        (= (fill row2) 0)
-        (= (fill row3) 0)
-        (= (fill row4) 0)
-
-        (at col1 fill0)
-        (at col2 fill0)
-        (at col3 fill0)
-        (at col4 fill0)
-        (at col5 fill0)
-        (at row1 fill0)
-        (at row2 fill0)
-        (at row3 fill0)
-        (at row4 fill0)
-        (at row5 fill0)
-
+        (is0 fill0)
+ 
         ; so that the planner knows how to increment the fill
-        (next fill0 fill1)
-        (next fill1 fill2)
-        (next fill2 fill3)
-        (next fill3 fill4)
-        (next fill4 fill5)
+        (nextF fill0 fill1)
+        (nextF fill1 fill2)
+        (nextF fill2 fill3)
+        (nextF fill3 fill4)
+        (nextF fill4 fill5)
 
-        ; so that the planner knows how to decrement the fill
-        (prev fill1 fill0)
-        (prev fill2 fill1)
-        (prev fill3 fill2)
-        (prev fill4 fill3)
-        (prev fill5 fill4)
+        (nextC col0 col1)
+        (nextC col1 col2)
+        (nextC col2 col3)
+        (nextC col3 col4)
+
+        (nextR row0 row1)
+        (nextR row1 row2)
+        (nextR row2 row3)
+        (nextR row3 row4)
 
         ; so that the planner know that square 00 
         ;corresponds to col0 and row0
@@ -93,16 +86,16 @@
         ; coresponding to the keys
         ; the last number is how many square should be filled to complete
         ; the puzzel in that row or column` 
-        (= (fill col0) 3)
-        (= (fill col1) 3)
-        (= (fill col2) 3)
-        (= (fill col3) 2)
-        (= (fill col4) 2)
+        (is col0 fill0)
+        (is col1 fill3)
+        (is col2 fill3)
+        (is col3 fill3)
+        (is col4 fill0)
 
-        (= (fill row0) 2)
-        (= (fill row1) 2)
-        (= (fill row2) 3)
-        (= (fill row3) 3)
-        (= (fill row4) 3)
+        (is row0 fill0)
+        (is row1 fill3)
+        (is row2 fill3)
+        (is row3 fill3)
+        (is row4 fill0)
     ))
 )
