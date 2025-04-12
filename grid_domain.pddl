@@ -3,7 +3,7 @@
 (:requirements :strips :adl :typing :equality :negative-preconditions :disjunctive-preconditions :existential-preconditions :universal-preconditions :quantified-preconditions :conditional-effects :derived-predicates :action-costs )
 
 (:types 
-col row fill square
+col row fill square key
 )
 
 ; un-comment following line if constants are needed
@@ -25,10 +25,11 @@ col row fill square
     ; tells what col/row is next to what
     (nextC ?a - col ?b - col)
     (nextR ?a - row ?b - row)
-
+ 
         ;a fluent to tell if a row or column is empty,
         ; so is0 fill0 should always be true
     (is0 ?a) 
+    (has ?c ?k - key)
     
 )
 
@@ -432,5 +433,46 @@ col row fill square
 
                 )
         )
+(:action fillNEW
+    ; takes in the sqaure(sPrime) that is being filled, the column and row it is in, 
+    ;and the fill value of each of the column and row
+    ; then finds the 4 adjacent squares
+    :parameters (?sPrime - square ?cPrime - col ?rPrime - row 
+                ?colkey - key ?rowkey - key
+                ?f_c1 - fill  ?f_r1 - fill ?f_c2 - fill  ?f_r2 - fill 
+                ?sAbove - square ?rAbove - row
+                ?sBelow - square ?rBelow - row
+                ?sLeft - square ?cLeft - col
+                ?sRight - square ?cRight - col
+                )
+
+
+    :precondition (and (not (filled ?sPrime)) ; square is not already filled
+                        (in ?sPrime ?cPrime ?rPrime ) ; square is in the column and row
+                        (has ?cPrime ?colkey) ; column is filled by
+                        (has ?rPrime ?rowkey) ; row is filled
+                        
+                        (is ?colkey ?f_c1) ; how filled the col is
+                        (is ?rowkey ?f_r1) ; how filled the rowis
+
+                        (in ?sAbove ?cPrime ?rAbove ) ; square above is in the column and row
+                        (nextR ?rAbove ?rPrime) ; checks that it is the square above of square prime
+
+                        (in ?sBelow ?cPrime ?rBelow ) ; square below is in the column and row
+                        (nextR ?rPrime ?rBelow) ; checks that it is the square below of square prime
+
+                        (in ?sLeft ?cLeft ?rPrime ) ; square left is in the column and row
+                        (nextC ?cLeft ?cPrime) ; checks that it is the square left of square prime
+
+                        (in ?sRight ?cRight ?rPrime ) ; square right is in the column and row
+                        (nextC ?cPrime ?cRight) ; checks that it is the square right of square prime
+
+                        (nextF ?f_c1 ?f_c2) ; column fill is incremented by 1
+                        (nextF ?f_r1 ?f_r2) ; row fill is incremented by 1
+
+                        )
+
+    :effect (and )
+)
 
 ); end of define domain
