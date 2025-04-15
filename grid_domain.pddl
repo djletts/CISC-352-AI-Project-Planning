@@ -1,13 +1,12 @@
 (define (domain grid_domain)
 
-(:requirements :strips :adl :typing :equality :negative-preconditions :disjunctive-preconditions :existential-preconditions :universal-preconditions :quantified-preconditions :conditional-effects :derived-predicates :action-costs )
+(:requirements :strips :adl :typing :equality :negative-preconditions :disjunctive-preconditions 
+:existential-preconditions :universal-preconditions :quantified-preconditions :conditional-effects 
+:derived-predicates :action-costs )
 
 (:types 
 col row fill square key
 )
-
-; un-comment following line if constants are needed
-;(:constants )
 
 (:predicates 
     ; keeps track of what column/row is filled by what
@@ -26,17 +25,21 @@ col row fill square key
     (nextC ?a - col ?b - col)
     (nextR ?a - row ?b - row)
  
-        ;a fluent to tell if a row or column is empty,
-        ; so is0 fill0 should always be true
+    ;a fluent to tell if a row or column is empty,
+    ; so is0 fill0 should always be true
     (is0 ?a - fill) 
     (has ?c ?k - key) ; tells what column/row is filled by what key
     
 )
 
 ; Actions are how we change the squares to be filled
-; we have 3 different actions to fill in the squares. We have a base case, where we fill a 
-;square that is surrounded by 4 empty squares. We have a case where we fill a square that is
-;surrounded by 3 empty squares and 1 filled square. And we have a case where we fill a square 
+; we have 4 different actions to fill in the squares. We have a base case, where we fill a 
+;square that is surrounded by 4 empty squares. There is 2 actions that fill a square that is
+;surrounded by 3 empty squares and 1 filled square- one for where that square is in the same col
+;and another where its in the same row. Then we have the last action that fills a square that is
+; in the corner of 2 filled squares.
+; The planner is not allowed to fill when it is inbettwen 2 filled squares on either side
+; - this is so the keys are not messed up
 (:action BaseCase
     ; takes in the sqaure(sPrime) that is being filled, the column and row it is in, 
     ; and the fill value of each of the column and row
@@ -52,11 +55,13 @@ col row fill square key
 
     :precondition (and (not (filled ?sPrime)) ; square is not already filled
                         (in ?sPrime ?cPrime ?rPrime ) ; square is in the column and row
+
                         (has ?cPrime ?keyC) ; column is filled by
-                        (has ?rPrime ?keyR) ; row is filled
                         (is ?keyC ?f_c1) ; how filled the col is
-                        (is ?keyR ?f_r1) ; how filled the rowis
                         (is0 ?f_c1) ; col key is empty
+                        
+                        (has ?rPrime ?keyR) ; row is filled
+                        (is ?keyR ?f_r1) ; how filled the rowis
                         (is0 ?f_r1) ; row key is empty
 
                         (in ?sAbove ?cPrime ?rAbove ) ; square above is in the column and row
@@ -65,35 +70,31 @@ col row fill square key
 
                         (in ?sBelow ?cPrime ?rBelow ) ; square below is in the column and row
                         (nextR ?rPrime ?rBelow) ; checks that it is the square below of square prime
-                        (not (filled ?sBelow)) ; square above is not filled
+                        (not (filled ?sBelow)) ; square below is not filled
 
                         (in ?sLeft ?cLeft ?rPrime ) ; square left is in the column and row
                         (nextC ?cLeft ?cPrime) ; checks that it is the square left of square prime
-                        (not (filled ?sLeft)) ; square above is not filled
+                        (not (filled ?sLeft)) ; square to the left is not filled
 
                         (in ?sRight ?cRight ?rPrime ) ; square right is in the column and row
                         (nextC ?cPrime ?cRight) ; checks that it is the square right of square prime
-                        (not (filled ?sBelow)) ; square above is not filled
+                        (not (filled ?sRight)) ; square to the right is not filled
 
                         (nextF ?f_c1 ?f_c2) ; column fill is incremented by 1
                         (nextF ?f_r1 ?f_r2) ; row fill is incremented by 1
-
                         )
 
     :effect (and 
-                ; To make the problem simpler for now, we are requiring only 1 number per key
-                ; we plan on expanding this to allow for multiple numbers per key as nonograms usually have
-
+                ; the square is filled and the column and row fill is incremented
                 (and (filled ?sPrime)
-                    (not (is ?keyC ?f_c1)) 
+                    (not (is ?keyC ?f_c1)) ; have to make this false to properly increment
                     (not (is ?keyR ?f_r1))
                     (is ?keyC ?f_c2)
                     (is ?keyR ?f_r2))
                     )); end of effect and Base case
+
 (:action appendToKeyRow
-    ; takes in the sqaure(sPrime) that is being filled, the column and row it is in, 
-    ; and the fill value of each of the column and row
-    ; then finds the 4 adjacent squares
+    ; fills next to a square that is already filled in the row
     :parameters (?sPrime - square ?cPrime - col ?rPrime - row 
                 ?f_c1 - fill  ?f_r1 - fill ?f_c2 - fill  ?f_r2 - fill 
                 ?keyC - key ?keyR - key
@@ -105,9 +106,12 @@ col row fill square key
 
     :precondition (and (not (filled ?sPrime)) ; square is not already filled
                         (in ?sPrime ?cPrime ?rPrime ) ; square is in the column and row
+
                         (has ?cPrime ?keyC) ; column is filled by
-                        (has ?rPrime ?keyR) ; row is filled
                         (is ?keyC ?f_c1) ; how filled the col is
+                        (is0 ?f_c1) ; col key is empty
+                        
+                        (has ?rPrime ?keyR) ; row is filled
                         (is ?keyR ?f_r1) ; how filled the rowis
                         (not (is0 ?f_r1)) ; row is not empty
 
@@ -129,10 +133,12 @@ col row fill square key
                         )
 
     :effect (and 
-            (when (and (filled ?sLeft) (not(filled ?sRight)) 
-                        (not(filled ?sAbove)) (not(filled ?sBelow))) ; fills the square and increments the column and row fill
 
-                    ; fills the square and increments the column and row fill
+                ; appends to square to the left of it
+                (when (and (filled ?sLeft) (not(filled ?sRight)) 
+                        (not(filled ?sAbove)) (not(filled ?sBelow))) 
+
+                ; the square is filled and the column and row fill is incremented
                 (and (filled ?sPrime)
                     (not (is ?keyC ?f_c1)) 
                     (not (is ?keyR ?f_r1))
@@ -140,24 +146,20 @@ col row fill square key
                     (is ?keyR ?f_r2)
                 ))
                 
+                ; appends to square to the right of it
                 (when (and (not(filled ?sLeft))  (filled ?sRight) 
-                        (not(filled ?sAbove)) (not(filled ?sBelow))) ; fills the square and increments the column and row fill
-
+                        (not(filled ?sAbove)) (not(filled ?sBelow))) 
                     ; fills the square and increments the column and row fill
                 (and (filled ?sPrime)
                     (not (is ?keyC ?f_c1)) 
                     (not (is ?keyR ?f_r1))
                     (is ?keyC ?f_c2)
                     (is ?keyR ?f_r2)
-                )
-                )
-                
+                ))
         ))  ;end of effect and append to key row
-        ; The 4 other actions are to fill the edges of the grid correctly
+
 (:action appendToKeyCol
-    ; takes in the sqaure(sPrime) that is being filled, the column and row it is in, 
-    ; and the fill value of each of the column and row
-    ; then finds the 4 adjacent squares
+    ; fills next to a square that is already filled in the col
     :parameters (?sPrime - square ?cPrime - col ?rPrime - row 
                 ?f_c1 - fill  ?f_r1 - fill ?f_c2 - fill  ?f_r2 - fill 
                 ?keyC - key ?keyR - key
@@ -169,11 +171,14 @@ col row fill square key
 
     :precondition (and (not (filled ?sPrime)) ; square is not already filled
                         (in ?sPrime ?cPrime ?rPrime ) ; square is in the column and row
+
                         (has ?cPrime ?keyC) ; column is filled by
-                        (has ?rPrime ?keyR) ; row is filled
                         (is ?keyC ?f_c1) ; how filled the col is
                         (not (is0 ?f_c1)) ; col key is not empty
+
+                        (has ?rPrime ?keyR) ; row is filled
                         (is ?keyR ?f_r1) ; how filled the rowis
+                        (is0 ?f_r1) ; row key is empty
                         
 
                         (in ?sAbove ?cPrime ?rAbove ) ; square above is in the column and row
@@ -194,36 +199,31 @@ col row fill square key
                         );end of precondition
 
     :effect (and 
-                ; To make the problem simpler for now, we are requiring only 1 number per key
-                ; we plan on expanding this to allow for multiple numbers per key as nonograms usually have
+               ; appends to the square below it
                 (when (and (not(filled ?sLeft)) (not(filled ?sRight)) 
-                        (not(filled ?sAbove)) (filled ?sBelow)) ; fills the square and increments the column and row fill
-
+                        (not(filled ?sAbove)) (filled ?sBelow)) 
                     ; fills the square and increments the column and row fill
                 (and (filled ?sPrime)
                     (not (is ?keyC ?f_c1)) 
                     (not (is ?keyR ?f_r1))
                     (is ?keyC ?f_c2)
                     (is ?keyR ?f_r2)
-                )
-                )
-                (when (and (not(filled ?sLeft)) (not(filled ?sRight)) 
-                        (filled ?sAbove) (not(filled ?sBelow))) ; fills the square and increments the column and row fill
+                ))
 
+                ; appends to the square above it
+                (when (and (not(filled ?sLeft)) (not(filled ?sRight)) 
+                        (filled ?sAbove) (not(filled ?sBelow))) 
                     ; fills the square and increments the column and row fill
                 (and (filled ?sPrime)
                     (not (is ?keyC ?f_c1)) 
                     (not (is ?keyR ?f_r1))
                     (is ?keyC ?f_c2)
                     (is ?keyR ?f_r2)
-                )
-                )
+                ))
         ));end of effect and append to key row
-        ; The 4 other actions are to fill the edges of the grid correctly
+
 (:action appendToKeyCorner
-    ; takes in the sqaure(sPrime) that is being filled, the column and row it is in, 
-    ; and the fill value of each of the column and row
-    ; then finds the 4 adjacent squares
+    ; fills next to a square that is already filled in the col and row
     :parameters (?sPrime - square ?cPrime - col ?rPrime - row 
                 ?f_c1 - fill  ?f_r1 - fill ?f_c2 - fill  ?f_r2 - fill 
                 ?keyC - key ?keyR - key
@@ -235,10 +235,12 @@ col row fill square key
 
     :precondition (and (not (filled ?sPrime)) ; square is not already filled
                         (in ?sPrime ?cPrime ?rPrime ) ; square is in the column and row
+
                         (has ?cPrime ?keyC) ; column is filled by
-                        (has ?rPrime ?keyR) ; row is filled
                         (is ?keyC ?f_c1) ; how filled the col is
                         (not (is0 ?f_c1)) ; col key is not empty
+
+                        (has ?rPrime ?keyR) ; row is filled
                         (is ?keyR ?f_r1) ; how filled the rowis
                         (not (is0 ?f_r1)) ; col key is not empty
                         
@@ -261,11 +263,9 @@ col row fill square key
                         );end of precondition
 
     :effect (and 
-                ; To make the problem simpler for now, we are requiring only 1 number per key
-                ; we plan on expanding this to allow for multiple numbers per key as nonograms usually have
+               ; bottom right is filled
                 (when (and (filled ?sLeft) (not(filled ?sRight)) 
-                        (filled ?sAbove) (not(filled ?sBelow))) ; fills the square and increments the column and row fill
-
+                        (filled ?sAbove) (not(filled ?sBelow))) 
                     ; fills the square and increments the column and row fill
                 (and (filled ?sPrime)
                     (not (is ?keyC ?f_c1)) 
@@ -273,9 +273,10 @@ col row fill square key
                     (is ?keyC ?f_c2)
                     (is ?keyR ?f_r2)
                 ))
-                (when (and (filled ?sLeft) (not(filled ?sRight)) 
-                        (not(filled ?sAbove)) (filled ?sBelow)) ; fills the square and increments the column and row fill
 
+                ; top right is filled
+                (when (and (filled ?sLeft) (not(filled ?sRight)) 
+                        (not(filled ?sAbove)) (filled ?sBelow)) 
                     ; fills the square and increments the column and row fill
                         (and (filled ?sPrime)
                         (not (is ?keyC ?f_c1)) 
@@ -283,19 +284,21 @@ col row fill square key
                         (is ?keyC ?f_c2)
                         (is ?keyR ?f_r2)
                 ))
-        (when (and (not(filled ?sLeft)) (filled ?sRight) 
-                        (filled ?sAbove) (not(filled ?sBelow))) ; fills the square and increments the column and row fill
 
-                    ; fills the square and increments the column and row fill
-                (and (filled ?sPrime)
-                    (not (is ?keyC ?f_c1)) 
-                    (not (is ?keyR ?f_r1))
-                    (is ?keyC ?f_c2)
-                    (is ?keyR ?f_r2)
-                )
-                )
+                ; bottom left is filled
                 (when (and (not(filled ?sLeft)) (filled ?sRight) 
-                        (not(filled ?sAbove)) (filled ?sBelow)) ; fills the square and increments the column and row fill
+                        (filled ?sAbove) (not(filled ?sBelow))) 
+                    ; fills the square and increments the column and row fill
+                (and (filled ?sPrime)
+                    (not (is ?keyC ?f_c1)) 
+                    (not (is ?keyR ?f_r1))
+                    (is ?keyC ?f_c2)
+                    (is ?keyR ?f_r2)
+                ))
+
+                ; top left is filled
+                (when (and (not(filled ?sLeft)) (filled ?sRight) 
+                        (not(filled ?sAbove)) (filled ?sBelow)) 
 
                     ; fills the square and increments the column and row fill
                 (and (filled ?sPrime)
@@ -303,7 +306,6 @@ col row fill square key
                     (not (is ?keyR ?f_r1))
                     (is ?keyC ?f_c2)
                     (is ?keyR ?f_r2)
-                )
-                )
+                ))
         ));end of effect and append to key row
 ); end of define domain

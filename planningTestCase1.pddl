@@ -12,7 +12,7 @@
 		;Corresponding to how many squares are filled in a row
 		fill0 fill1 fill2 fill3 - fill
 
-		
+		;Corresponding to each key for a given row or column
 		c0Key0 c0Key1 
 		c1Key0 c1Key1 
 		c2Key0 c2Key1 
@@ -33,7 +33,9 @@
 		sq4_0 sq4_1 sq4_2 sq4_3 sq4_4  - square
 	)
 	(:init
-		(is c0Key0 fill0)
+
+		;Sets all keys to fill 0 (they all start off empty)
+		(is c0Key0 fill0);for padding
 
 		(is c1Key0 fill0)
 		(is c1Key1 fill0)
@@ -44,8 +46,9 @@
 		(is c3Key0 fill0)
 		(is c3Key1 fill0)
 
-		(is c4Key0 fill0)
-		(is r0Key0 fill0)
+		(is c4Key0 fill0);for padding
+
+		(is r0Key0 fill0);for padding
 		(is r1Key0 fill0)
 		(is r1Key1 fill0)
 
@@ -55,24 +58,32 @@
 		(is r3Key0 fill0)
 		(is r3Key1 fill0)
 
-		(is r4Key0 fill0)
+		(is r4Key0 fill0);for padding
 
-		(is0 fill0)
+		(is0 fill0); helps to know if key is empty
 
+
+		;to tell what fills come after eachother
 		(nextF fill0 fill1)
 		(nextF fill1 fill2)
 		(nextF fill2 fill3)
 
+
+		;to tell row is next to eachother
 		(nextR row0 row1)
 		(nextR row1 row2)
 		(nextR row2 row3)
 		(nextR row3 row4)
 
+
+		;to tell col is next to eachother
 		(nextC col0 col1)
 		(nextC col1 col2)
 		(nextC col2 col3)
 		(nextC col3 col4)
 
+
+		;to tell what square are in what column and row
 		(in sq0_0 col0 row0)
 		(in sq0_1 col0 row1)
 		(in sq0_2 col0 row2)
@@ -104,6 +115,7 @@
 		(in sq4_4 col4 row4)
 		
 
+		;Setting the keys to its given row/column
 		(has col1 c1Key0)
 		(has col1 c1Key1)
 
@@ -129,32 +141,40 @@
 		(has row0 r0Key0)
 		(has row4 r4Key0))
 	(:goal (and
-		(is c0Key0 fill0)
+		(is c0Key0 fill0);for padding
 
-		(is c1Key0 fill2)
+		;Corresponding to the col keys 
+		;[[1, 0], [1, 1], [1, 0]]
+		(is c1Key0 fill1)
 		(is c1Key1 fill0)
 
-		(is c2Key0 fill2)
-		(is c2Key1 fill0)
+		(is c2Key0 fill1)
+		(is c2Key1 fill1)
 
 		(is c3Key0 fill1)
 		(is c3Key1 fill0)
 
-		(is c4Key0 fill0)
+		(is c4Key0 fill0);for padding
 
 
-		(is r0Key0 fill0)
+		(is r0Key0 fill0);for padding
 
-		(is r1Key0 fill2)
+
+		;Corresponding to the row keys
+		;[[1, 0], [1, 1], [1, 0]]
+		(is r1Key0 fill1)
 		(is r1Key1 fill0)
 
-		(is r2Key0 fill2)
-		(is r2Key1 fill0)
+		(is r2Key0 fill1)
+		(is r2Key1 fill1)
 
 		(is r3Key0 fill1)
 		(is r3Key1 fill0)
 
-		(is r4Key0 fill0)
-
-	))
-)
+		(is r4Key0 fill0);for padding
+	)); end of goal
+	;Sol: #-filled 0-blank
+	;0#0
+	;#0#
+	;0#0
+);end of define

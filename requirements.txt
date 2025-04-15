@@ -5,33 +5,16 @@ Dylan Letts - Student ID: 20323382 - School Email: 21djl11@queensu.ca
 
 
 #Getting Started
-##1.Installation process:The PDDL extension for VScode was installed through the VScode extensions marketplace. It was used to program and run the files
-##2.Software dependencies: The grid_domain.pddl and planning.pddl are both needed to run 
-##3.Latest releases:N/A
-##4.API references: N/A
+##1.Installation process:The PDDL extension for VScode was installed through the VScode extensions marketplace.
+                 It was used to program and run the files
+##2.Software dependencies: The grid_domain.pddl and planningTestCase#.pddl are both needed to run. 
+planningCreator.pddl is not needed to run the program but is used to create the planningTestCase#.pddl files
+## PDDL 2.28.2 and Python 3.13.2 were used to run the code.
 
 #Build and Test
-Using LAMA-first to run the planning.pddl as all others do not work
-
-To test, change the goal in planning.pddl so that each row and col has the fill# as its key. If it is invalid keys, then no plan will be found
- for example:
-        (is col0 fill0)
-        (is col1 fill3)
-        (is col2 fill3)
-        (is col3 fill3)
-        (is col4 fill0)
-
-        (is row0 fill0)
-        (is row1 fill3)
-        (is row2 fill3)
-        (is row3 fill3)
-        (is row4 fill0)
-corrisponds to 
-00000
-0###0
-0###0
-0###0
-00000
+To run (in VS code) go to the planningTestCase#.pddl file you want, press Alt + P, 
+then select LAMA-first to run the plan. The output would be the actions it used to 
+create the plan. To visualize the finished grid, we drew what squares were used in each action
 
 #Contribute
 Nicole Hernandez and Dylan Letts code the project together. The way we coded was often to 
