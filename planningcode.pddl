@@ -1,29 +1,29 @@
-(define (problem planning);find a way to get the file to be made in the proper folder
+(define (problem planning)
 	(:domain grid_domain)
 	(:objects
-		;Corresponding col 0 to 4 in a 5x5 grid)
+		;Corresponding col 0 to 2 in a 3x3 grid)
 		; will be used to tell how many squares are filled in each col
 		col0 col1 col2 col3 col4 - col
 
-		;Corresponding row 0 to 4 in a 5x5 grid)
+		;Corresponding row 0 to 2 in a 3x3 grid)
 		; will be used to tell how many squares are filled in each row
 		row0 row1 row2 row3 row4 - row
 
 		;Corresponding to how many squares are filled in a row
-		fill0 fill1 fill2 fill3 fill4 fill5 - fill
+		fill0 fill1 fill2 fill3 - fill
 
 		
-		c0Key0 c0Key1 c0Key2 
-		c1Key0 c1Key1 c1Key2 
-		c2Key0 c2Key1 c2Key2 
-		c3Key0 c3Key1 c3Key2 
-		c4Key0 c4Key1 c4Key2 
+		c0Key0 c0Key1 
+		c1Key0 c1Key1 
+		c2Key0 c2Key1 
+		c3Key0 c3Key1 
+		c4Key0 c4Key1 
 		
-		r0Key0 r0Key1 r0Key2 
-		r1Key0 r1Key1 r1Key2 
-		r2Key0 r2Key1 r2Key2 
-		r3Key0 r3Key1 r3Key2 
-		r4Key0 r4Key1 r4Key2 - key
+		r0Key0 r0Key1 
+		r1Key0 r1Key1 
+		r2Key0 r2Key1 
+		r3Key0 r3Key1 
+		r4Key0 r4Key1 - key
 
 		;Corresponding to each square (true if filled)
 		sq0_0 sq0_1 sq0_2 sq0_3 sq0_4 
@@ -34,53 +34,34 @@
 	)
 	(:init
 		(is c0Key0 fill0)
-		(is c0Key1 fill0)
-		(is c0Key2 fill0)
 
 		(is c1Key0 fill0)
 		(is c1Key1 fill0)
-		(is c1Key2 fill0)
 
 		(is c2Key0 fill0)
 		(is c2Key1 fill0)
-		(is c2Key2 fill0)
 
 		(is c3Key0 fill0)
 		(is c3Key1 fill0)
-		(is c3Key2 fill0)
 
 		(is c4Key0 fill0)
-		(is c4Key1 fill0)
-		(is c4Key2 fill0)
-
 		(is r0Key0 fill0)
-		(is r0Key1 fill0)
-		(is r0Key2 fill0)
-
 		(is r1Key0 fill0)
 		(is r1Key1 fill0)
-		(is r1Key2 fill0)
 
 		(is r2Key0 fill0)
 		(is r2Key1 fill0)
-		(is r2Key2 fill0)
 
 		(is r3Key0 fill0)
 		(is r3Key1 fill0)
-		(is r3Key2 fill0)
 
 		(is r4Key0 fill0)
-		(is r4Key1 fill0)
-		(is r4Key2 fill0)
-
 
 		(is0 fill0)
 
 		(nextF fill0 fill1)
 		(nextF fill1 fill2)
 		(nextF fill2 fill3)
-		(nextF fill3 fill4)
-		(nextF fill4 fill5)
 
 		(nextR row0 row1)
 		(nextR row1 row2)
@@ -123,88 +104,57 @@
 		(in sq4_4 col4 row4)
 		
 
-		(has col0 c0Key0)
-		(has col0 c0Key1)
-		(has col0 c0Key2)
-
 		(has col1 c1Key0)
 		(has col1 c1Key1)
-		(has col1 c1Key2)
 
 		(has col2 c2Key0)
 		(has col2 c2Key1)
-		(has col2 c2Key2)
 
 		(has col3 c3Key0)
 		(has col3 c3Key1)
-		(has col3 c3Key2)
 
-		(has col4 c4Key0)
-		(has col4 c4Key1)
-		(has col4 c4Key2)
-
-
-		(has row0 r0Key0)
-		(has row0 r0Key1)
-		(has row0 r0Key2)
 
 		(has row1 r1Key0)
 		(has row1 r1Key1)
-		(has row1 r1Key2)
 
 		(has row2 r2Key0)
 		(has row2 r2Key1)
-		(has row2 r2Key2)
 
 		(has row3 r3Key0)
 		(has row3 r3Key1)
-		(has row3 r3Key2)
 
-		(has row4 r4Key0)
-		(has row4 r4Key1)
-		(has row4 r4Key2)
 
-)
-	(:goal (and; fix formating
-		(is c0Key0 fill1)
-		(is c0Key1 fill1)
-		(is c0Key2 fill1)
+		(has col0 c0Key0)
+		(has col4 c4Key0)
+		(has row0 r0Key0)
+		(has row4 r4Key0))
+	(:goal (and
+		(is c0Key0 fill0)
 
 		(is c1Key0 fill2)
-		(is c1Key1 fill1)
-		(is c1Key2 fill0)
+		(is c1Key1 fill0)
 
 		(is c2Key0 fill2)
 		(is c2Key1 fill0)
-		(is c2Key2 fill0)
 
-		(is c3Key0 fill3)
+		(is c3Key0 fill1)
 		(is c3Key1 fill0)
-		(is c3Key2 fill0)
 
-		(is c4Key0 fill4)
-		(is c4Key1 fill0)
-		(is c4Key2 fill0)
-		
-		(is r0Key0 fill1)
-		(is r0Key1 fill0)
-		(is r0Key2 fill0)
+		(is c4Key0 fill0)
 
-		(is r1Key0 fill0)
+
+		(is r0Key0 fill0)
+
+		(is r1Key0 fill2)
 		(is r1Key1 fill0)
-		(is r1Key2 fill0)
 
-		(is r2Key0 fill5)
+		(is r2Key0 fill2)
 		(is r2Key1 fill0)
-		(is r2Key2 fill0)
 
-		(is r3Key0 fill2)
+		(is r3Key0 fill1)
 		(is r3Key1 fill0)
-		(is r3Key2 fill0)
 
-		(is r4Key0 fill3)
-		(is r4Key1 fill0)
-		(is r4Key2 fill0)
+		(is r4Key0 fill0)
 
 	))
 )

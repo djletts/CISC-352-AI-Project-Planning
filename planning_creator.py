@@ -24,7 +24,7 @@ def getInput():
         colKeys.append(list(map(int, colK.split())))
     print()
     for i in range(n):
-        rowK = input(f"Enter the keys for column {i+1} (space-separated): ")
+        rowK = input(f"Enter the keys for row {i+1} (space-separated): ")
         rowKeys.append(list(map(int, rowK.split())))
 
     for i in range(n):
@@ -47,7 +47,7 @@ f.write("\t(:objects\n")
 list = ["col", "row"]
 for j in range(2):
     string = ""
-    for i in range(n):
+    for i in range(n+2):
         string = string + list[j] + str(i) + " "
     f.write(f"\t\t;Corresponding {list[j]} 0 to {n - 1} in a {n}x{n} grid)\n")
     f.write(f"\t\t; will be used to tell how many squares are filled in each {list[j]}\n")
@@ -63,7 +63,7 @@ f.write("\t\t" + string + "- fill\n")
 list = ["c", "r"]
 for j in range(2):
     string = "\n\t\t"
-    for i in range(n):
+    for i in range(n+2):
         for k in range(numKeys):
             string = string + list[j] + str(i) + "Key" + str(k) + " "
         f.write(f"\n\t\t{string}")
@@ -71,9 +71,9 @@ for j in range(2):
 f.write("- key\n")
 
 string = ""
-for i in range(n):
+for i in range(n+2):
     string = string + "\n\t\t"
-    for j in range(n):
+    for j in range(n+2):
         string = string + "sq" + str(i) + "_" + str(j) + " "
 
 f.write("\n\t\t;Corresponding to each square (true if filled)")
@@ -83,15 +83,19 @@ f.write("\t)\n")
 
 #------ init
 f.write("\t(:init\n")
+f.write(f"\t\t(is c{0}Key{0} fill0)\n\n") # to add padding
 for i in range(n):
     for j in range(numKeys):
-        f.write(f"\t\t(is c{i}Key{j} fill0)\n")
+        f.write(f"\t\t(is c{i+1}Key{j} fill0)\n")
     f.write("\n")
+f.write(f"\t\t(is c{n+1}Key{0} fill0)\n") # to add padding
 
+f.write(f"\t\t(is r{0}Key{0} fill0)\n") # to add padding
 for i in range(n):
     for j in range(numKeys):
-        f.write(f"\t\t(is r{i}Key{j} fill0)\n")
+        f.write(f"\t\t(is r{i+1}Key{j} fill0)\n")
     f.write("\n")
+f.write(f"\t\t(is r{n+1}Key{0} fill0)\n") # to add padding
 
 f.write("\n")
 f.write("\t\t(is0 fill0)\n")
@@ -101,17 +105,17 @@ for i in range(n):
     f.write(f"\t\t(nextF fill{i} fill{i+1})\n")
 f.write("\n")
 
-for i in range(n-1):
+for i in range(n+1):
     f.write(f"\t\t(nextR row{i} row{i+1})\n")
 f.write("\n")
 
-for i in range(n-1):
+for i in range(n+1):
     f.write(f"\t\t(nextC col{i} col{i+1})\n")
 f.write("\n")
 
 # to tell what square are in what column and row
-for i in range(n):
-    for j in range(n):
+for i in range(n+2):
+    for j in range(n+2):
         f.write(f"\t\t(in sq{i}_{j} col{i} row{j})\n")
     f.write(f"\t\t\n")
 
@@ -121,25 +125,31 @@ list2 = ["col", "row"]
 for j in range(2):
     for i in range(n):
         for k in range(numKeys):
-            f.write(f"\n\t\t(has {list2[j]}{i} {list[j]}{i}Key{k})")
+            f.write(f"\n\t\t(has {list2[j]}{i+1} {list[j]}{i+1}Key{k})")
         f.write("\n")
     f.write("\n")
+f.write(f"\n\t\t(has col0 c0Key0)")
+f.write(f"\n\t\t(has col{n+1} c{n+1}Key0)")
+f.write(f"\n\t\t(has row0 r0Key0)")
+f.write(f"\n\t\t(has row{n+1} r{n+1}Key0)")
 f.write(")\n")
 #------ goals
 f.write("\t(:goal (and\n")
 
+f.write(f"\t\t(is c{0}Key{0} fill0)\n\n") # to add padding
 for i in range(n):
     for j in range(numKeys):
-        f.write(f"\t\t(is c{i}Key{j} fill{colKeys[i][j]})\n")
+        f.write(f"\t\t(is c{i+1}Key{j} fill{colKeys[i][j]})\n")
     f.write("\n")
+f.write(f"\t\t(is c{n+1}Key{0} fill0)\n\n\n") # to add padding
 
+f.write(f"\t\t(is r{0}Key{0} fill0)\n\n") # to add padding
 for i in range(n):
     for j in range(numKeys):
-        f.write(f"\t\t(is r{i}Key{j} fill{rowKeys[i][j]})\n")
+        f.write(f"\t\t(is r{i+1}Key{j} fill{rowKeys[i][j]})\n")
     f.write("\n")
-    
+f.write(f"\t\t(is r{n+1}Key{0} fill0)\n\n") # to add padding
+
 f.write("\t))\n")
 f.write(")\n")
 f.close()
-
-print("Number of keys: ", numKeys)
